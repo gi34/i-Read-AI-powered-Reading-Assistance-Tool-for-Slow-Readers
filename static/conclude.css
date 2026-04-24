@@ -1,0 +1,145 @@
+
+
+body {
+    font-family: 'Open-Dyslexic', sans-serif;
+    background-color: #f5f5dc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 20px; /* Adjust to match top-menu height */
+}
+
+.top-menu {
+    display: flex;
+    justify-content: center;  /* Center the title */
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+    position: relative; /* Enables absolute positioning for the icon */
+}
+
+.menu-icon img{
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.menu-icon{
+    position: absolute;
+    background: none;  /* Removes background */
+    border: none;      /* Removes border */
+    padding: 0;        /* Removes extra padding */
+    cursor: pointer;
+    left: 130px;
+}
+
+.title {
+    font-size: 24px;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+
+.wpm, .cwpm {
+    text-align: center;
+}
+
+.box {
+    background-color: #fff;
+    border: 2px solid #333;
+    padding: 20px 30px;
+    border-radius: 12px;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.metrics {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+ul {
+    list-style-type: none;  /* Remove bullets */
+    padding: 0;  /* Remove padding */
+    font-size: 25px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);  /* Create 5 columns */
+    gap: 40px;  /* Consistent gap between items */
+    max-width: 90%;  /* Optional: Set a maximum width for the grid */
+    margin: 0 auto;  /* Center the grid */
+    margin-top: 40px;
+}
+
+li {
+    padding-left: 0;
+    margin-bottom: 0;  /* Remove margin from list items */
+    text-align: center;  /* Center-align text in each item */
+}
+
+
+
+.list{
+    margin-top: 30px;
+    font-size: 25px;
+}
+
+.ps{
+    font-size: 15px;
+    margin-top: 20px;
+}
+
+.ps + .ps {
+    margin-top: 5px; /* or any smaller value */
+}
+
+.ps:last-of-type {
+    font-style: italic;
+    color: gray;
+}
+
+.suggestion{
+    padding: 35px; 
+    white-space: pre-wrap;
+    width: 800px;
+    height: fit-content;
+}
+
+
+.suggestionText{
+    font-size: 25px;
+    line-height: 3;
+    word-spacing: 15px;
+}
+
+/*styling for word element*/
+.word {
+    cursor: pointer;
+    display: inline-block;
+    padding: 1;
+    line-height: 1.5;
+    transition: box-shadow 0.2s ease;
+}
+
+.word:hover {
+    background-color: rgba(0, 0, 0, 0.04); /* barely visible */
+    border-radius: 4px;
+}
+
+.word.show-box {
+    border: 2px solid #4A90E2;
+    border-radius: 4px;
+    background-color: rgba(74, 144, 226, 0.1);
+}

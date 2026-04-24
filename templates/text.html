@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>{{ story_name }} - Reading Assistance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="theme-color" content="#000000"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='text.css') }}"/>
+    <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css" />
+
+</head>
+
+<body>
+    <div id="calibration-overlay">Calibrating microphone... Please stay silent for 5 seconds.</div>
+
+    <div class="text">
+        <div class="top-menu">
+            <a href="{{ url_for('home') }}" class="menu-icon" id="back">
+                <img src="{{ url_for('static', filename='back.png') }}" alt="Back">
+            </a>
+
+            <h2 class="title">{{ story_name }}</h2>
+
+            <div class = "right-buttons">
+                <button class="menu-icon" id="font-size-btn">
+                    <img src="{{ url_for('static', filename='font.png') }}" alt="Adjust Font Size">
+                </button>
+
+
+
+                <div id="colorTrigger" style="font-size: 24px; cursor: pointer;">🎨</div>
+
+                <!-- This is a TEMPLATE for the tooltip — DO NOT hide it with display: none -->
+                <template id="colorTippyContent">
+                    <div class="color-container">
+                        <div class="color-swatch" style="background-color: #ffe3e2;" data-color="#ffe3e2"></div>
+                        <div class="color-swatch" style="background-color: #a4d5a6;" data-color="#a4d5e6"></div>
+                        <div class="color-swatch" style="background-color: #cce685;" data-color="#cce685"></div>
+                        <div class="color-swatch" style="background-color: #a8e685;" data-color="#a8e685"></div>
+                        <div class="color-swatch" style="background-color: #ded8e4;" data-color="#ded8e4"></div>
+                        <div class="color-swatch" style="background-color: #87aa74;" data-color="#87aa74"></div>
+                        <div class="color-swatch" style="background-color: #9e9e7c;" data-color="#9e9e7c"></div>
+                        <div class="color-swatch" style="background-color: #f19d38;" data-color="#f19d38"></div>
+                    </div>
+                </template>
+
+
+
+                <a href="{{ url_for('conclude') }}" class="end-button" id="end">
+                    End
+                </a>
+            </div>
+        </div>
+
+        <div class = "right-buttons">
+            <button class="menu-icon" id="font-size-btn">
+                <img src="{{ url_for('static', filename='font.png') }}" alt="Adjust Font Size">
+            </button>
+
+            <div id="font-settings-overlay" class="overlay hidden">
+        
+                <label for="font-size-range">Font Size</label>
+                <input type="range" id="font-size-range" min="30" max="70" step="8" value="30">
+        
+                <label for="line-spacing-range">Line Spacing</label>
+                <input type="range" id="line-spacing-range" min="3" max="6" step="0.5" value="3">
+        
+            </div>
+
+            <a href="{{ url_for('conclude') }}" class="end-button" id="end">
+                End
+            </a>
+        </div>
+
+        <div class="container-xs">
+            <div class="text-content">
+                <div id="tooltip-box" style="display: none;"></div>
+                {% for sentence in chunks %}
+                    <p class="sentence">
+                        {% for word in sentence.split() %}
+                            <span class="word" onclick="getDefinition(event,'{{ word }}')">{{ word }}</span>
+                         {% endfor %}
+                    </p>
+                    
+                {% endfor %}
+            </div>
+        </div>
+            <a href="{{ url_for('home') }}">
+                <button>Back to Home</button>
+            </a>
+        </div>
+
+        <div class="bottom-menu">
+            <button class="menu-icon" id="toggle-play">
+                <img src="{{ url_for('static', filename='play.png') }}" alt="Start/Pause">
+            </button>
+        </div>
+
+
+    </div>
+
+    <script>
+       window.addEventListener("DOMContentLoaded", () => {
+            const sentences = [...document.querySelectorAll(".sentence")];
+
+            sentences.forEach(sentence => {
+                const originalWords = [...sentence.querySelectorAll(".word")];
+
+                originalWords.forEach(wordEl => {
+                    const wordText = wordEl.textContent;
+
+                    // Separate punctuation (.,!?;:) — but keep visible punctuation
+                    const punctuationRegex = /[.,!?;:(){}[\]"'`]/g;
+                    const punctuationMatch = wordText.match(punctuationRegex);
+                    const wordWithoutPunctuation = wordText.replace(punctuationRegex, "");
+
+                    // If there's no hyphen, skip
+                    if (!/[-‒–—]/.test(wordWithoutPunctuation)) return;
+
+                    // Match word parts and hyphen groups separately
+                    const partsAndHyphens = wordWithoutPunctuation.split(/([-‒–—]+)/g).filter(part => part.length > 0);
+
+                    partsAndHyphens.forEach((part, idx) => {
+                        if (/[-‒–—]+/.test(part)) {
+                            // It's a hyphen or double-hyphen etc.
+                            const hyphenSpan = document.createElement("span");
+                            hyphenSpan.classList.add("hyphen");
+                            hyphenSpan.textContent = part;
+                            sentence.insertBefore(hyphenSpan, wordEl);
+                        } else {
+                            // It's a word
+                            const wordSpan = document.createElement("span");
+                            wordSpan.classList.add("word");
+                            wordSpan.textContent = part;
+                            wordSpan.addEventListener("click", (e) => getDefinition(e, part));
+                            sentence.insertBefore(wordSpan, wordEl);
+                        }
+                    });
+
+                    // Reattach punctuation (still visible)
+                    if (punctuationMatch) {
+                        const punctuationSpan = document.createElement("span");
+                        punctuationSpan.classList.add("punctuation");
+                        punctuationSpan.textContent = punctuationMatch.join("");
+                        sentence.insertBefore(punctuationSpan, wordEl);
+                    }
+
+                    // Remove the original word span
+                    wordEl.remove();
+                });
+            });
+        });
+
+        </script>
+        
+
+        
+    </body>
+</html>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+
+
+<script>
+
+const socket = io("http://127.0.0.1:5000"); // Connect to Flask-SocketIO
+let calibrationDone = false
+let isTranscribing = false
+
+socket.on("connect", function() {
+    console.log("✅ Connected to Flask WebSocket server!");
+});
+
+document.getElementById("font-size-btn").addEventListener("click", function () {
+    const overlay = document.getElementById("font-settings-overlay");
+    overlay.classList.toggle("hidden");
+});
+
+
+const textContent = document.querySelector(".text-content");
+
+document.getElementById("font-size-range").addEventListener("input", function () {
+    textContent.style.fontSize = this.value + "px";
+});
+
+document.getElementById("line-spacing-range").addEventListener("input", function () {
+    textContent.style.lineHeight = this.value;
+});
+
+
+document.addEventListener("DOMContentLoaded",function() { 
+    const backButton = document.getElementById('back'); // Get the button
+
+    backButton.addEventListener("click", function (event) {            
+    fetch('/stop_transcription')
+        .then(response => response.json())
+        .then(data => {
+            console.log("Transcription stopped:", data);
+
+            document.querySelectorAll(".highlight"),forEach(el =>{
+                el.classList.remove("highlight");
+                el.innerHTML = el.innerText;
+            });
+
+        })
+        .catch(error => console.error("Error stopping transcription:", error));
+    });
+    
+});
+
+
+
+document.getElementById("toggle-play").addEventListener("click", async function() {
+    let playIcon = this.querySelector("img");
+    const overlay = document.getElementById("calibration-overlay");
+
+    if (playIcon.src.includes("play.png")) {
+        playIcon.src = "{{ url_for('static', filename='pause.png') }}";
+        if(!calibrationDone){
+        //show calibration overlay while calibrating
+            if(overlay){
+                overlay.style.display = "flex"
+            }
+        }
+            
+        // Trigger the transcription to start when play is clicked
+        if (isTranscribing) {
+            console.log("Resumed")
+            socket.emit("pause_transcription")
+        }else{
+            startTranscription()
+        }
+
+    } else {
+        playIcon.src = "{{ url_for('static', filename='play.png') }}";
+        isTranscribing = true //check this line for the value
+        console.log("pause ")
+        socket.emit("pause_transcription")
+    }
+});
+
+async function startTranscription() {
+        isTranscribing = true
+        const response = await fetch('/start_transcription');
+        const data = await response.json();
+        console.log(data.status);  // Log the status to check if transcription started
+    }
+
+
+
+const sentences = [...document.querySelectorAll(".sentence")];
+
+function highlightWord(chunkIndex, wordIndex, backendWord) {
+let targetSentence = sentences[chunkIndex];
+if (!targetSentence) return; // Prevent errors
+
+let words = [...targetSentence.querySelectorAll(".word")];
+
+
+
+//remove previous highlight
+document.querySelectorAll(".highlight").forEach((el) => {
+    el.classList.remove("highlight");
+    el.innerHTML = el.innerText; // Reset innerHTML
+});
+
+
+let adjustedIndex = 0; // Adjusted word index based on hyphen splitting
+requestAnimationFrame(() => { // Optimize DOM updates
+    for (let wordElement of words) {
+        let wordText = wordElement.innerText;
+        let normalizedText = wordText.replace(/[\u2011\u2012\u2013\u2014\u002D]/g, " ");
+        let splitWords = normalizedText.split(" "); // Now split safely
+
+        for (let i = 0; i < splitWords.length; i++) {
+            if (adjustedIndex === wordIndex) {
+                // Highlight the correct word
+                splitWords[i] = `<span class="highlight">${splitWords[i]}</span>`;
+                wordElement.innerHTML = splitWords.join("-"); // Rebuild with highlight
+                return;
+            }
+            adjustedIndex++;
+        }
+    }
+    console.warn("⚠ Word index mismatch, highlighting skipped.");
+});
+}
+
+// Listen for updates from Flask
+socket.on("new_target_word", (data) => {
+    const chunkIndex = data.chunk_index;
+    const absoluteIndex = data.word_index;
+    const targetWord = data.target_word;
+
+    //const now = Date.now();
+
+    //const sent_time = data.sent_time
+    //const latency = ((now - sent_time) / 1000).toFixed(4); // seconds
+
+    console.log("👉 Highlighting word:", targetWord, "at", chunkIndex, absoluteIndex);
+
+
+    /*
+    fetch("/log_highlight_latency", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ latency, word: targetWord })  // Ensure this key matches Flask's expectation
+    });
+
+    */
+
+
+    // ✅ If RESET is received, clear highlights & restart from first word
+    if (targetWord === "RESET") {
+        document.querySelectorAll(".highlight").forEach(el => {
+            el.classList.remove("highlight");
+            el.innerHTML = el.innerText; // Reset innerHTML
+        });
+
+        console.log("🔄 Reset detected, highlighting first word...");
+        setTimeout(() => highlightWord(0, 0, ""), 100);  // ✅ Small delay ensures UI sync
+        return;
+    }
+
+    // ✅ Normal highlighting
+    highlightWord(chunkIndex, absoluteIndex, targetWord);
+});
+
+socket.on("calibration_done", () => {
+    const overlay = document.getElementById("calibration-overlay");
+    if (overlay) {
+        overlay.style.display = "none";
+        console.log("hide overlay")
+    }
+
+    calibrationDone = true
+});
+
+socket.on("hyphenated_word", (data) => {
+    const { chunk_index, word_index, hyphenated_word } = data;
+
+    let targetSentence = sentences[data.chunk_index];
+    if (!targetSentence) return;
+
+    const words = [...targetSentence.querySelectorAll(".word")];
+
+    if (word_index >= 0 && word_index < words.length) {
+        const targetWord = words[word_index];
+        console.log(targetWord,hyphenated_word)
+
+        // Simply replace the word content with the hyphenated version
+        targetWord.textContent = hyphenated_word;
+
+    } else {
+        console.warn("⚠ Word index mismatch. Skipped hyphenated replacement.");
+    }
+
+    
+});
+
+
+
+function getDefinition(event, word) {
+    console.log("Looking for definition:", word);
+    socket.emit('get_definition', { word });
+
+    // Remove 'show-box' from all words
+    document.querySelectorAll('.word.show-box').forEach(el => {
+        el.classList.remove('show-box');
+    });
+
+    // Add 'show-box' to the clicked word only
+    const wordElement = event.target;
+    if (wordElement && wordElement.classList.contains('word')) {
+        wordElement.classList.add('show-box');
+    }
+    
+    window.lastClickedWordElement = wordElement;
+}
+
+
+function emitTTS(word) {
+    socket.emit('trigger_tts', { word });
+}
+
+// Handling the response from the backend to show the definition in the speech bubble
+socket.on("show_definition", (data) => {
+    const definition = data.definition;
+    const word = data.word;
+
+    const tooltip = document.getElementById("tooltip-box");
+    tooltip.style.display = "block";
+    
+    if (!window.lastClickedWordElement) return;
+
+    // Destroy any previous Tippy instance to avoid stacking
+    if (window.activeTippyInstance) {
+        window.activeTippyInstance.destroy();
+    }
+
+    // Create a new Tippy on the clicked word
+    window.activeTippyInstance = tippy(window.lastClickedWordElement, {
+        content: `
+            <div class="tooltip-header">
+                <span class="definition-text">${definition}</span>
+            </div>
+            <button class="speak-btn" onclick="emitTTS('${word}')">🔊</button>
+            
+        `,
+        allowHTML: true,
+        placement: 'bottom', // Placing the tooltip below the word
+        arrow: true, // Optional: Show an arrow pointing to the word
+        theme: 'definition',
+        trigger: 'manual', // Triggered manually when we want to show it
+    });
+
+    // Show the tooltip
+    window.activeTippyInstance.show();
+
+    
+});
+
+document.addEventListener('click', (event) => {
+    if (!window.lastClickedWordElement) return;
+
+    // Hide the tooltip if you click outside of the word or tooltip
+    if (!window.lastClickedWordElement.contains(event.target) && !document.getElementById("tooltip-box").contains(event.target)) {
+        if (window.activeTippyInstance) {
+            window.activeTippyInstance.hide();
+        }
+    }
+});
+
+
+document.addEventListener("click", (e) => {
+    const tooltip = document.getElementById("tooltip-box");
+
+    if (!e.target.classList.contains("word")) {
+        tooltip.style.display = "none";
+
+        // Remove 'show-box' from all words
+        document.querySelectorAll('.word.show-box').forEach(el => {
+            el.classList.remove('show-box');
+        });
+    }
+});
+
+</script>
+
+
+
+
+
+<script>
+    // Clone the template content and inject into tooltip
+    const template = document.getElementById('colorTippyContent');
+    const content = template.content.cloneNode(true);
+
+    // Create the tooltip with the cloned content
+    tippy('#colorTrigger', {
+        content: content,
+        allowHTML: true,
+        interactive: true,
+        placement: 'bottom-end',
+        theme: 'light',
+        trigger: 'click',
+        onShow(instance) {
+            // Attach event listener when tooltip content is added to DOM
+            const colorSwatches = instance.popper.querySelectorAll('.color-swatch');
+            colorSwatches.forEach(swatch => {
+                swatch.addEventListener('click', function () {
+                    const color = this.getAttribute('data-color');
+                    document.body.style.backgroundColor = color;
+                    document.querySelector('.top-menu').style.backgroundColor = color;
+                    document.querySelector('.bottom-menu').style.backgroundColor = color;
+                    localStorage.setItem('backgroundColor', color);
+                });
+            });
+        }
+    });
+
+    // Apply stored background color on load
+    window.addEventListener('load', () => {
+        const savedColor = localStorage.getItem('backgroundColor');
+        if (savedColor) {
+            document.body.style.backgroundColor = savedColor;
+            document.querySelector('.top-menu').style.backgroundColor = savedColor;
+            document.querySelector('.bottom-menu').style.backgroundColor = savedColor;
+        }
+    });
+</script>

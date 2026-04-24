@@ -1,0 +1,77 @@
+<!doctype = html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="theme-color" content="#000000"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='conclude.css') }}"/>
+    <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet">
+</head>
+<body>
+    <div class = "top-menu">
+        <a href="{{ url_for('home') }}" class="menu-icon" id="back">
+            <img src="{{ url_for('static', filename='back.png') }}" alt="Back">
+        </a>
+
+        <h1 class = "title">Reading Report</h1>
+        
+    </div>
+
+    <div class="container">
+        <div class="metrics">
+            <div class="wpm">
+                <h3>Word per minute (WPM)</h3>
+                <p class="box">{{wpm}}</p>
+            </div>
+    
+            <div class="cwpm">
+                <h3>Correct word per minute (CWPM)</h3>
+                <p class="box">{{cwpm}}</p>
+            </div>
+        </div>
+    
+        <div class="list">
+            <h3 class="list">Mispronounced word</h3>
+            <ul>
+                {% for word in flag %}
+                    <li>
+                        <span class="word" onclick="triggerTTS('{{ word }}')">{{ word }}</span>
+                    </li>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            
+        </div>
+        
+    </div>
+
+    <p class = 'ps'> wpm between 50 -150 is considered as slow reader. Average wpm for a normal adult is 200 - 250 </p>
+    <p class = 'ps'> These parameters (ie. wpm and cwpm) are for reference only, reading duration and other factors may affect the result</p>
+    
+    <div class="suggestion">
+        <div class="suggestionText">{{ suggestion.replace("**", "") }}</div>
+    </div>
+    
+</body>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+<script>
+
+const socket = io("http://127.0.0.1:5000"); // Connect to Flask-SocketIO
+
+function triggerTTS(word) {
+    socket.emit("trigger_tts", { word: word });
+}
+
+window.addEventListener('load', () => {
+    const savedColor = localStorage.getItem('backgroundColor');
+    if (savedColor) {
+        document.body.style.backgroundColor = savedColor;
+    }
+});
+
+
+</script>

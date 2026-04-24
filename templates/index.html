@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <title>Reading assistance tool for Slow Readers</title>
+        <meta name = "viewport" content=""width=device-width, initial-scale="1.0"/>
+        <meta name="theme-color" content="#000000"/>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home.css') }}"/>
+        <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet">
+        <!--use CDN approach for the font type-->
+
+        <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css"/>
+
+    </head>
+
+
+    <body>
+        <div class="home">
+
+
+                    <!-- Trigger button -->
+        <div id="colorTrigger" style="font-size: 24px; cursor: pointer;">🎨</div>
+
+        <!-- This is a TEMPLATE for the tooltip — DO NOT hide it with display: none -->
+        <template id="colorTippyContent">
+            <div class="color-container">
+                <div class="color-swatch" style="background-color: #ffe3e2;" data-color="#ffe3e2"></div>
+                <div class="color-swatch" style="background-color: #a4d5a6;" data-color="#a4d5e6"></div>
+                <div class="color-swatch" style="background-color: #cce685;" data-color="#cce685"></div>
+                <div class="color-swatch" style="background-color: #a8e685;" data-color="#a8e685"></div>
+                <div class="color-swatch" style="background-color: #ded8e4;" data-color="#ded8e4"></div>
+                <div class="color-swatch" style="background-color: #87aa74;" data-color="#87aa74"></div>
+                <div class="color-swatch" style="background-color: #9e9e7c;" data-color="#9e9e7c"></div>
+                <div class="color-swatch" style="background-color: #f19d38;" data-color="#f19d38"></div>
+            </div>
+        </template>
+
+
+
+            <div class="container-xs">
+                <h2 class="h2">select the text that you want to read</h2>
+                <div class="list">
+                    <div class="png">
+                        <a href="{{ url_for('read_story', story_name='The lottery') }}">
+                            <img src="{{ url_for('static', filename='stories/the lottery.png') }}" alt="The lottery"/>
+                            <button class="book">the lottery</button>
+                        </a>
+                    </div>
+
+                    <div class="png">
+                        <a href="{{ url_for('read_story', story_name='The Yellow Wallpaper') }}">
+                            <img src="{{ url_for('static', filename='stories/the yellow wallpaper.png') }}" alt="The Yellow Wallpaper"/>
+                            <button class="book">the yellow wallpaper</button>
+                        </a>
+                    </div>
+
+                    <div class="png">
+                        <a href="{{ url_for('read_story', story_name='The Gift of the Magi') }}">
+                            <img src="{{ url_for('static', filename='stories/the gift of the magi.png') }}" alt="The lottery"/>
+                            <button class="book">the gift of the magi</button>
+                        </a>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+
+
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <script>
+        // Clone the template content and inject into tooltip
+        const template = document.getElementById('colorTippyContent');
+        const content = template.content.cloneNode(true);
+
+        // Create the tooltip with the cloned content
+        tippy('#colorTrigger', {
+            content: content,
+            allowHTML: true,
+            interactive: true,
+            placement: 'bottom-end',
+            theme: 'light',
+            trigger: 'click'
+        });
+
+        // Attach event listener AFTER the tooltip is mounted
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('color-swatch')) {
+                const color = e.target.dataset.color;
+                document.body.style.backgroundColor = color;
+                localStorage.setItem('backgroundColor', color);
+            }
+        });
+
+        // Apply stored background color on load
+        window.addEventListener('load', () => {
+            const savedColor = localStorage.getItem('backgroundColor');
+            if (savedColor) {
+                document.body.style.backgroundColor = savedColor;
+            }
+        });
+    </script>

@@ -1,0 +1,119 @@
+
+
+
+body{
+    margin: 0;
+    padding: 0;
+    height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Open-Dyslexic';
+    background-color: #ffe3e2;
+    color: #333;
+    letter-spacing: 7px; /* Increase space between letters */
+    word-spacing: 25px; /* Increase space between words */
+    line-height: 1.5; /* Makes text more readable */
+}
+
+.png{
+    max-width: 200px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.list{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 50px;
+
+}
+
+.png img{
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 3px solid black;
+}
+
+h2{
+    text-align: center;
+    margin-bottom: 80px;
+    font-size: 30px;
+    width: max-content;
+}
+
+.home{
+    text-align: center;
+    padding: 50px;
+    align-items: center;
+    max-width: 800px;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    height: 100%;
+}
+
+.book{
+    font-family: 'Open-Dyslexic';
+    font-size: 21px;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+    width: 100%;
+    letter-spacing: 5px; /* Increase space between letters */
+    word-spacing: 15px; /* Increase space between words */
+    line-height: 1.5;
+}
+
+.book:hover{
+    background-color: #0056b3;
+}
+
+
+
+/*customize tippy*/
+.color-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+    max-width: 180px;
+}
+
+.color-swatch {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #888;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.color-swatch:hover {
+    transform: scale(1.15);
+    transition: all 0.2s ease;
+}
+
+#colorTrigger {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1000;
+    background: white;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+

@@ -1,0 +1,151 @@
+#model only (whisper + vosk)
+import asyncio
+import queue
+import sounddevice as sd
+from vosk import Model, KaldiRecognizer
+import json, Levenshtein
+import whisper
+from pynput import keyboard
+import numpy as np
+import time
+
+vosk_model = Model("vosk")
+recognizer = KaldiRecognizer(vosk_model, 16000)
+whisper_model = whisper.load_model("base.en")
+sample_rate = 16000
+chunk_size = int(sample_rate * 3)  # 3-second audio chunks
+audio_queue = queue.Queue()
+stop_transcription = False
+count=0
+reference_text = "I showed my masterpiece to the grown-ups, and asked them whether the drawing frightened them."
+chunks = [reference_text.split()[i:i + chunk_size] for i in range(0, len(reference_text.split()), chunk_size)]
+
+def audio_callback(indata, frames, time, status):
+    audio_queue.put(bytes(indata))
+
+def calculate_accuracy(reference, text):
+    distance = Levenshtein.distance(text.lower(), reference.lower())
+    max_length = max(len(text), len(reference))
+    accuracy = (1 - distance / max_length)
+    return accuracy
+
+def remaining(vosk_text, whisper_text, partial_sentence):
+    vosk_words = vosk_text.split()
+    whisper_words = whisper_text.strip().split()
+    sentence_words = partial_sentence.split()
+    idx = 0
+    while idx < len(sentence_words):
+        target_word = sentence_words[idx]
+        #check if any model successfully recognise the word
+        vosk_word = vosk_words[idx] if idx < len(vosk_words) else ''
+        whisper_word = whisper_words[idx] if idx < len(whisper_words) else ''
+        if vosk_word.lower() == target_word or whisper_word.lower() == target_word:
+            idx+=1
+        else:
+            vosk_accuracy = calculate_accuracy(vosk_word, target_word)
+            whisper_accuracy = calculate_accuracy(whisper_word, target_word)
+            max_accuracy = max(vosk_accuracy, whisper_accuracy)
+            #validate accuracy
+            if max_accuracy >= 0.6:
+                print(f"read successfully: '{target_word}'  Accuracy: {max_accuracy}")
+                idx += 1  
+            else:
+                print(f"read: '{target_word}' (Vosk={vosk_accuracy:.2f}, Whisper={whisper_accuracy:.2f})")
+                break 
+
+    partial_sentence = " ".join(sentence_words[idx:])
+    return partial_sentence
+
+async def process_vosk(data):
+    if recognizer.AcceptWaveform(data):
+        vosk_result = json.loads(recognizer.Result())
+        return vosk_result.get("text", "").strip()
+    return ""
+
+async def process_whisper(audio_chunk):
+    audio_chunk_32 = np.frombuffer(audio_chunk, dtype='int16').astype('float32') / 32768.0
+    result = whisper_model.transcribe(audio_chunk_32, temperature=0.3)
+    return result['text'].strip()
+
+async def transcription_loop():
+    buffer = b''
+    chunk_count = 0
+    chunk_index = 0  # Index of the current chunk
+    whisper_text=""
+    global stop_transcription,count
+
+
+    if chunk_index < len(chunks):
+        reference = " ".join(chunks[chunk_index])
+        partial_sentence = reference
+        print(f"Current chunk: {reference}")
+
+    while not stop_transcription:
+        if chunk_index >= len(chunks):
+            print("All words read!")
+            stop_transcription = True
+            break
+
+        if not audio_queue.empty():
+            audio_chunk = audio_queue.get()
+            buffer += audio_chunk
+            chunk_count += 1
+
+            vosk_text = await process_vosk(audio_chunk)
+            print(f"Vosk: {vosk_text}")
+            partial_sentence = remaining(vosk_text, whisper_text, partial_sentence)
+            print('Sentence to read:', partial_sentence, "\n")
+            count +=1
+            
+            if count== 3: #after 3 seconds
+                whisper_text = await process_whisper(buffer)
+                print(f"Whisper: {whisper_text}")
+                count=0 
+
+                partial_sentence = remaining(vosk_text, whisper_text, partial_sentence)
+                print('Sentence to read:', partial_sentence, "\n")
+
+                buffer = b'' 
+                chunk_count = 0
+
+                if not partial_sentence:
+                    chunk_index += 1
+                    if chunk_index < len(chunks):
+                        reference = " ".join(chunks[chunk_index])
+                        partial_sentence = reference
+                        print(f"Next chunk: {reference}")
+                    else:
+                        print("All words read!")
+                        stop_transcription = True
+        else:
+            await asyncio.sleep(0.1)
+
+def on_press(key):
+    global stop_transcription
+    try:
+        if key.char == 'k':
+            print('Key "k" pressed. Stopping transcription.')
+            stop_transcription = True
+            return False
+    except AttributeError:
+        return True
+
+listener = keyboard.Listener(on_press=on_press)
+listener.start()
+
+async def main():
+    global stop_transcription
+    try:
+        with sd.RawInputStream(samplerate=sample_rate, blocksize=8000, dtype="int16",
+                               channels=1, callback=audio_callback):
+            print("Listening... Press 'k' to stop.")
+            await transcription_loop()
+    except KeyboardInterrupt:
+        print("\nTranscription stopped.")
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        stop_transcription = True
+        listener.stop()
+
+asyncio.run(main())

@@ -1,0 +1,306 @@
+
+body{
+    font-family: 'Open-Dyslexic', sans-serif;
+    background-color: #f5f5dc;
+    color: #333;    
+}
+
+.title{
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    font-size: 30px;
+    opacity: 50%;
+}
+
+.text-content {
+    display: flex;
+    flex-direction: column;
+    align-items: left; /* Centers text horizontally */
+    justify-content: center; /* Centers text vertically */
+    max-width: 1300px; /* Restrict width for readability */
+    margin: auto; /* Centers the block */
+    padding: 30px;
+    font-size: 36px;
+    letter-spacing: 7px; /* Increase space between letters */
+    word-spacing: 25px; /* Increase space between words */
+    line-height: 3.0; /* Improve readability */
+    text-align: left;
+}
+
+.container-xs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh; /* Center vertically */
+    margin-top: 60px; /* To avoid being covered by the top menu */
+    margin-bottom: 60px;
+}
+
+
+.top-menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background-color: #f5f5dc;
+    padding: 10px 20px;
+    z-index: 11000;
+}
+
+.title{
+    flex: 1;
+    text-align: center;
+    margin: 0
+}
+
+.right-buttons{
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    margin-right: 30px;
+}
+
+.bottom-menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background-color: #f5f5dc;
+    padding: 10px 20px;
+    z-index: 11000;
+}
+
+.menu-icon img{
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+#font-size-btn{
+    margin-right: 80px;
+}
+
+#back img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    margin-left: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #f5f5dc;
+}
+
+.menu-icon{
+    all:unset;
+    display: inline-block;
+    background: none;  /* Removes background */
+    border: none;      /* Removes border */
+    padding: 0;        /* Removes extra padding */
+    cursor: pointer;
+    outline: none;
+    box-shadow: none;
+}
+
+.end-button {
+    display: flex;                 /* Use Flexbox */
+    align-items: center;           /* Center vertically */
+    justify-content: center;       /* Center horizontally */
+    padding: 8px 12px;
+    background-color: #d36c6c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+    height: 40px;
+    font-size: 20px;
+    width: 50px;                   /* Allow width to adjust based on content */
+}
+
+
+
+.highlight {
+    background-color: yellow;
+    font-weight: bold;
+}
+
+#calibration-overlay {
+    position: fixed; /*cover the whole page*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* Semi-transparent black */
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: white;
+    font-weight: bold;
+    display: none;
+}
+
+/* Styling for the word element */
+.word {
+    cursor: pointer;
+    display: inline-block;
+    padding: 1;
+    line-height: 1.5;
+    transition: box-shadow 0.2s ease;
+}
+
+.word:hover {
+    background-color: rgba(0, 0, 0, 0.04); /* barely visible */
+    border-radius: 4px;
+}
+
+.word.show-box {
+    border: 2px solid #4A90E2;
+    border-radius: 4px;
+    background-color: rgba(74, 144, 226, 0.1);
+}
+
+
+
+
+
+.overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 100%;
+    background-color: #f0f0cf;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    z-index: 1000;
+
+    padding-top: 150px;
+    padding-left: 30px;
+    padding-right: 30px;
+    font-size: 25px;
+}
+
+.settings-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.hidden {
+    display: none;
+}
+
+
+/* Customize tooltip of definition */
+.tippy-box[data-theme~='definition'] {
+    color: white; /* or any color you want */
+    background-color: #96ADFC; /* example background */
+    max-width: 300px;
+    font-size: 25px;
+    line-height: 60px;
+    z-index: 80;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Header inside the tooltip */
+.tooltip-header {
+    position: relative;
+    max-width: 400px;
+    z-index: 90;
+    margin-bottom: 30px;
+}
+
+/* Speak button positioning */
+.speak-btn {
+    position: absolute;
+    background: none;
+    border: none;
+    cursor: pointer !important;
+    font-size: 30px;
+    z-index: 100;
+    pointer-events: auto;
+    bottom: 0.2px;
+    right: 0.2px;
+}
+
+.speak-btn:hover {
+    cursor: pointer !important;  /* Ensure the cursor is a hand when hovering over the button */
+}
+
+.hyphen {
+    pointer-events: none;
+}
+
+
+
+
+
+
+
+
+
+
+/*customize tippy*/
+.color-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 180px;
+    margin-right: 10px;
+}
+
+
+.color-swatch {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #888;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.color-swatch:hover {
+    transform: scale(1.15);
+    transition: all 0.2s ease;
+}
+
+#colorTrigger {
+    font-size: 24px;
+    cursor: pointer;
+    border: none;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 40px;
+    margin-right: 10px;
+}
+
+
