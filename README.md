@@ -1,3 +1,18 @@
+# i-Read: AI-Powered Reading Assistance Tool for Slow Readers
+An AI-powered reading assistance tool for slow readers to improve reading skills by capturing pronunciation, providing real time visual cues and personalised feedback.
+
+
+## Project overview
+Many slow readers experience difficulty to read fluently. This project aims to aid slow readers in enhancing their reading and pronunciation skills via real time feedback and visual cues. The system capture real time pronunciation and validate the accuracy before proceeding to the next word, allowing slow readers to get instant feedback without coach or guidance.
+
+
+## Features
+- Real time feedback for mispronounced words
+- Personalised feedback after reading
+- 
+
+## Project Structure
+
 ```
 ML
 └──  app.py        # main file for running in web
@@ -31,3 +46,5 @@ ML
 └──  static
 |   # contains the css and png 
 ```
+
+## 
