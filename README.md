@@ -7,9 +7,11 @@ Many slow readers experience difficulty to read fluently. This project aims to a
 
 
 ## Features
+- AI-powered pronunciation analysis
+- Live pronunciation capture
 - Real time feedback for mispronounced words
-- Personalised feedback after reading
-- 
+- Personalised improvement suggestions
+- low latency speech processing
 
 ## Project Structure
 
@@ -47,4 +49,15 @@ ML
 |   # contains the css and png 
 ```
 
-## 
+## Demo
+[Watch demo video] [https://youtu.be/UKykSsWITZ0]
+
+## Techonolgies Used
+- Python
+- NLTK
+- Whisper
+- Vosk
+- llm
+- socketIO
+- flask
+- asyncio
